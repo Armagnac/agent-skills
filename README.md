@@ -1,6 +1,6 @@
 # Agent Skills
 
-Claude Code configuration and agentic development skills: structured planning (`/plan`), read-only Q&A (`/ask`), and autonomous plan execution (`plan-execution`).
+Claude Code configuration and agentic development skills: structured planning (`/superplan` or `/sp`), read-only Q&A (`/ask`), and autonomous plan execution (`plan-execution`).
 
 ## Installation
 
@@ -24,8 +24,8 @@ ln -s ~/git/agent-skills/skills ~/.claude/skills
 | Skill | Purpose | When to Use |
 |-------|---------|------------|
 | **`/ask`** | Read-only Q&A — answer questions about code, architecture, or anything else without modifying files | Understanding existing code before making changes, researching before a task |
-| **`/plan`** | Break large features into milestones and tasks, track progress in markdown, auto-execute with `/loop` | Starting a multi-day feature, complex refactors, want autonomous execution |
-| **`plan-execution`** (auto) | Auto-activates during plan work — executes tasks, marks progress, creates commits | Works alongside `/plan` and `/loop`; requires no explicit invocation |
+| **`/superplan`** (or `/sp`) | Break large features into milestones and tasks, track progress in markdown, auto-execute with `/loop` | Starting a multi-day feature, complex refactors, want autonomous execution |
+| **`plan-execution`** (auto) | Auto-activates during plan work — executes tasks, marks progress, creates commits | Works alongside `/superplan`, `/sp`, and `/loop`; requires no explicit invocation |
 
 ---
 
@@ -43,25 +43,25 @@ ln -s ~/git/agent-skills/skills ~/.claude/skills
 /ask Read online about Karpathy's approach for knowledge management. How could we apply it in our repo?
 ```
 
-### `/plan` — Build a feature methodically
+### `/superplan` (or `/sp`) — Build a feature methodically
 
 ```bash
-/plan Add JWT authentication
+/superplan Add JWT authentication
 # → Claude researches codebase, breaks it into milestones and tasks
 # → Writes plans/jwt-auth.plan.md with files, specs, acceptance criteria
 
-/plan next
+/sp next
 # → Execute task 1.1, verify, commit, mark done
 
-/loop /plan next --yes plans/jwt-auth.plan.md
+/loop /superplan next --yes plans/jwt-auth.plan.md
 # → Run all remaining tasks autonomously while you take a break
 ```
 
 
-### `plan-execution` — Automatic during `/plan` work
+### `plan-execution` — Automatic during `/superplan` or `/sp` work
 
 No invocation needed. Activates automatically when you:
-- Run `/plan next`
+- Run `/superplan next` or `/sp next`
 - Say "continue the plan"
 - Reference a `plans/*.plan.md` file
 
@@ -77,33 +77,33 @@ Read-only Q&A mode — Claude answers questions without modifying any files. Use
 /ask Which files implement feature Z?
 ```
 
-No files are modified. Use `/ask` for research and learning; use `/plan` when you're ready to implement.
+No files are modified. Use `/ask` for research and learning; use `/superplan` or `/sp` when you're ready to implement.
 
 ---
 
-## `/plan` in Detail
+## `/superplan` and `/sp` in Detail
 
-`/plan` breaks large features into **milestones** (product deliverables) and **tasks** (developer work items), tracks progress in a markdown file, and executes each task with acceptance criteria.
+`/superplan` (and its shorthand `/sp`) breaks large features into **milestones** (product deliverables) and **tasks** (developer work items), tracks progress in a markdown file, and executes each task with acceptance criteria.
 
 ### Subcommands
 
 | Command | What it does |
 |---------|-------------|
-| `/plan <description>` | Research the codebase and generate a structured plan file |
-| `/plan <TICKET-ID>` | Same, but fetches ticket details from Linear/GitHub/Jira first |
-| `/plan next` | Execute the next unchecked task (asks for confirmation) |
-| `/plan next --yes` | Execute the next task without confirmation |
-| `/plan next <file>` | Target a specific plan file |
-| `/plan status` | Show progress across all active plans |
-| `/plan review` | Re-evaluate the plan against current code state |
+| `/superplan <description>` or `/sp <description>` | Research the codebase and generate a structured plan file |
+| `/superplan <TICKET-ID>` or `/sp <TICKET-ID>` | Same, but fetches ticket details from Linear/GitHub/Jira first |
+| `/superplan next` or `/sp next` | Execute the next unchecked task (asks for confirmation) |
+| `/superplan next --yes` or `/sp next --yes` | Execute the next task without confirmation |
+| `/superplan next <file>` or `/sp next <file>` | Target a specific plan file |
+| `/superplan status` or `/sp status` | Show progress across all active plans |
+| `/superplan review` or `/sp review` | Re-evaluate the plan against current code state |
 
 ### Structured vs. Unstructured Loops
 
-`/loop /plan next --yes` is a **structured autonomy pattern** — each loop executes a named task with explicit acceptance criteria and makes a git commit before advancing.
+`/loop /superplan next --yes` is a **structured autonomy pattern** — each loop executes a named task with explicit acceptance criteria and makes a git commit before advancing.
 
 **Comparison with Ralph Loop:**
 
-| | Ralph Loop | `/loop /plan next --yes` |
+| | Ralph Loop | `/loop /superplan next --yes` |
 |--|--|--|
 | **Structure** | Unstructured — same prompt re-fed each iteration | Structured — next `[ ]` task with files, deps, acceptance criteria |
 | **Progress tracking** | None | `[x]` checkboxes + completion timestamps in plan file |
@@ -113,14 +113,14 @@ No files are modified. Use `/ask` for research and learning; use `/plan` when yo
 | **Resumability** | Restart from scratch if interrupted | Stop and resume anywhere — progress persists in the plan file |
 | **Loop mechanism** | Stop hook (inside session) | `/loop` skill (new prompt each iteration) |
 
-**Bottom line:** Ralph wins on zero-setup for exploratory tasks. `/plan` + `/loop` wins on auditability, resumability, and correctness — you get a full git history and can always inspect exactly which task failed and why.
+**Bottom line:** Ralph wins on zero-setup for exploratory tasks. `/superplan` + `/loop` wins on auditability, resumability, and correctness — you get a full git history and can always inspect exactly which task failed and why.
 
 ### Auto-executing with `/loop`
 
 **Example 1: Run an entire plan unattended**
 
 ```bash
-/loop /plan next --yes plans/dark-mode.plan.md
+/loop /superplan next --yes plans/dark-mode.plan.md
 ```
 
 What happens:
@@ -132,10 +132,10 @@ What happens:
 **Example 2: Run only the first milestone, then review**
 
 ```bash
-/loop /plan next --yes plans/jwt-auth.plan.md
+/loop /superplan next --yes plans/jwt-auth.plan.md
 # Watch output — when milestone 1 tasks are all done, press Ctrl+C
 # Review the code, test it, adjust the plan if needed
-/loop /plan next --yes plans/jwt-auth.plan.md   # resume milestone 2
+/loop /superplan next --yes plans/jwt-auth.plan.md   # resume milestone 2
 ```
 
 Each task was committed separately, so `git log` shows clean progress and any milestone is easy to roll back.
@@ -143,8 +143,8 @@ Each task was committed separately, so `git log` shows clean progress and any mi
 **Example 3: Resume a plan that's already in-progress**
 
 ```bash
-/plan status                        # see which tasks are done and what's next
-/loop /plan next --yes              # auto-detects the in-progress plan, resumes from first [ ]
+/superplan status                        # see which tasks are done and what's next
+/loop /superplan next --yes              # auto-detects the in-progress plan, resumes from first [ ]
 ```
 
 Claude re-reads the full plan on each iteration — completed tasks give context about what was already built, future tasks show what constraints to keep in mind.
@@ -154,13 +154,13 @@ Claude re-reads the full plan on each iteration — completed tasks give context
 - Review the plan file before looping — it's plain markdown, easy to edit
 - `--yes` skips confirmation prompts; omit it to approve each task manually
 - Each task commits separately — easy to `git revert` a single bad task without losing everything
-- Cancel anytime with `Ctrl+C`; the plan file preserves progress so the next `/plan next` picks up where you left off
+- Cancel anytime with `Ctrl+C`; the plan file preserves progress so the next `/superplan next` or `/sp next` picks up where you left off
 
 ---
 
 ## Plan File Format
 
-Plans live in `plans/*.plan.md` in your **project repo** (not this config repo). The `/plan` command creates and manages them.
+Plans live in `plans/*.plan.md` in your **project repo** (not this config repo). The `/superplan` and `/sp` commands creates and manages them.
 
 ### Anatomy of a Plan File
 
@@ -213,7 +213,7 @@ End-to-end checklist — commands to run, behaviors to confirm — after all mil
 | `[ ]` | Not started |
 | `[x]` | Complete (add `*(completed YYYY-MM-DD)*` inline) |
 
-### Example: `/plan status` Output
+### Example: `/superplan status` Output
 
 ```
 Plan: Add JWT Authentication System

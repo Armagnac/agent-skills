@@ -1,6 +1,6 @@
 ---
-name: plan
-description: Create and manage incremental implementation plans for large features. Subcommands: create (default), status, next, review.
+name: sp
+description: Shorthand alias for /superplan — create and manage incremental implementation plans for large features. Use /sp or /superplan interchangeably.
 type: meta
 triggers:
   - "create a plan"
@@ -12,9 +12,9 @@ allowed-tools: Bash(git:*, ls:*, cat:*), Read, Glob, Grep, Edit, Write, Agent, T
 argument-hint: <description or ticket_id> | status | next [plan_file] | review [plan_file]
 ---
 
-# Plan Command
+# SuperPlan Command (Shorthand: /sp)
 
-When user runs `/plan`, route to the appropriate subcommand based on the argument.
+When user runs `/sp` or `/superplan`, route to the appropriate subcommand based on the argument. This is the full instruction set for `/sp` — see `/superplan` for complete documentation.
 
 ## Routing
 
@@ -30,7 +30,7 @@ When user runs `/plan`, route to the appropriate subcommand based on the argumen
 
 ## Subcommand: Create (Default)
 
-**Trigger:** `/plan <feature description>` or `/plan <TICKET-ID>`
+**Trigger:** `/sp <feature description>` or `/sp <TICKET-ID>` (same as `/superplan`)
 
 ### Steps
 
@@ -152,7 +152,7 @@ Show the user:
 - Milestones overview (the high-level list)
 - Total task count
 - Estimated complexity per milestone
-- Ask: "Review and edit `plans/<name>.plan.md`, then run `/plan next` to start executing."
+- Ask: "Review and edit `plans/<name>.plan.md`, then run `/sp next` to start executing."
 
 **Do NOT start implementing.** The plan is a draft for user review.
 
@@ -160,7 +160,7 @@ Show the user:
 
 ## Subcommand: Status
 
-**Trigger:** `/plan status`
+**Trigger:** `/sp status` (same as `/superplan status`)
 
 ### Steps
 
@@ -181,13 +181,13 @@ Show the user:
 | Slack Integration | draft | 0/8 (0%) | Milestone 1: Webhook Setup |
 ```
 
-If no plan files found, show: "No plans found. Create one with `/plan <feature description>`"
+If no plan files found, show: "No plans found. Create one with `/sp <feature description>` or `/superplan <description>`"
 
 ---
 
 ## Subcommand: Next
 
-**Trigger:** `/plan next` or `/plan next plans/<name>.plan.md` or either with `--yes` flag
+**Trigger:** `/sp next` or `/sp next plans/<name>.plan.md` or either with `--yes` flag (same as `/superplan`)
 
 ### Steps
 
@@ -198,7 +198,7 @@ If no plan files found, show: "No plans found. Create one with `/plan <feature d
   - Glob for `plans/*.plan.md`
   - If exactly one `in-progress` plan exists, use it
   - If multiple exist, ask the user which one
-  - If none exist, show error: "No active plans. Create one with `/plan <feature description>`"
+  - If none exist, show error: "No active plans. Create one with `/sp <feature description>` or `/superplan <description>`"
 
 #### 2. Find Next Task
 
@@ -249,7 +249,7 @@ Next up: 2.2 - Add key validation middleware
 
 ## Subcommand: Review
 
-**Trigger:** `/plan review` or `/plan review plans/<name>.plan.md`
+**Trigger:** `/sp review` or `/sp review plans/<name>.plan.md` (same as `/superplan`)
 
 ### Steps
 
@@ -309,11 +309,11 @@ If yes, update the plan file with corrections.
 
 The plan system is designed to work alongside any project's existing workflow:
 
-- `/plan` handles the planning phase for large features
+- `/sp` and `/superplan` handle the planning phase for large features
 - Individual tasks follow the same implementation patterns as any dev task
 - Run project-specific code quality checks after each task implementation
 - When all tasks complete, create a PR for the full feature (or per milestone)
-- `/plan review` can be run anytime to check plan health
+- `/sp review` can be run anytime to check plan health
 
 If the project has specific commands for code checks, PR creation, or ticket management, use those as part of task execution.
 
@@ -335,5 +335,5 @@ If the project has specific commands for code checks, PR creation, or ticket man
 - Make each task independently verifiable
 - Update architecture decisions as you learn things during implementation
 - Commit after each task (not after each milestone)
-- Review the plan periodically with `/plan review`
+- Review the plan periodically with `/sp review` or `/superplan review`
 - Edit the plan file directly when scope changes
