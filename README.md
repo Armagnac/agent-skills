@@ -13,8 +13,8 @@ That's it. The `npx skills` CLI installs all three skills (`/plan`, `/ask`, `pla
 **Alternative: symlink from a local clone**
 
 ```bash
-git clone https://github.com/Armagnac/agent-skills ~/git/hsn-claude
-ln -s ~/git/hsn-claude/skills ~/.claude/skills
+git clone https://github.com/Armagnac/agent-skills ~/git/agent-skills
+ln -s ~/git/agent-skills/skills ~/.claude/skills
 ```
 
 ---
