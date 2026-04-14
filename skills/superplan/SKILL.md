@@ -1,15 +1,9 @@
 ---
 name: superplan
-description: "Create and manage incremental implementation plans for large features. Subcommands: create (default), status, next, review."
-type: meta
-triggers:
-  - "create a plan"
-  - "plan this"
-  - "break down"
-  - "planning"
-  - "structured approach"
-allowed-tools: Bash(git:*, ls:*, cat:*), Read, Glob, Grep, Edit, Write, Agent, Task
-argument-hint: <description or ticket_id> | status | next [plan_file] | review [plan_file]
+description: "Break large features into milestones and tasks, track progress in git-committed markdown, and execute autonomously with /loop. Use when starting a multi-hour feature, complex refactor, or any task too large for a single session — especially when you want resumable progress, per-task commits, and dependency ordering."
+when_to_use: "create a plan, plan this feature, break this down, I need a structured approach, plan before implementing, superplan, /sp"
+allowed-tools: Bash(git:* ls:* cat:*) Read Glob Grep Edit Write Agent Task
+argument-hint: <description or ticket_id> | status | next <plan_file> | review <plan_file>
 ---
 
 # SuperPlan Command
