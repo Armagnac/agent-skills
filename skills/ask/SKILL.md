@@ -1,6 +1,6 @@
 ---
 name: ask
-description: Read-only Q&A mode — answers questions about the codebase, architecture, or any topic without modifying files. Use for research and exploration before making changes.
+description: "Read-only Q&A mode — answers questions about the codebase, architecture, or any topic without modifying files. Use for research and exploration before making changes."
 type: meta
 triggers:
   - "how does"

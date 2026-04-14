@@ -1,6 +1,6 @@
 ---
 name: plan-execution
-description: Auto-activates when working with implementation plans. Triggers on "continue the plan", "next task", "what's the plan status", "run task 2.1", or when user references plans/*.plan.md files. Not for creating plans - use /superplan command for that.
+description: "Auto-activates when working with implementation plans. Triggers on \"continue the plan\", \"next task\", \"what's the plan status\", \"run task 2.1\", or when user references plans/*.plan.md files. Not for creating plans - use /superplan command for that."
 type: meta
 triggers:
   - "continue the plan"
