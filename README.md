@@ -1,6 +1,6 @@
 # Agent Skills
 
-Claude Code configuration and agentic development skills: structured planning (`/superplan`), read-only Q&A (`/ask`), and autonomous plan execution (`plan-execution`).
+Three Claude Code skills for building large features with structure and autonomy: persistent multi-milestone planning (`/superplan`), read-only research (`/ask`), and automatic task execution (`plan-execution`).
 
 ## Installation
 
@@ -19,29 +19,41 @@ ln -s ~/git/agent-skills/skills ~/.claude/skills
 
 ---
 
+## Why Not Just Use Claude's Built-in Plan Mode?
+
+Claude Code's built-in plan mode shows you what Claude intends to do before executing — great for quick, single-session tasks. But for a multi-hour feature it breaks down:
+
+- The plan lives only in the current session — close the tab, lose the plan
+- No milestones or dependency ordering — one flat list of proposed changes
+- No acceptance criteria — no way to verify each step worked before moving on
+- No git trail — hard to audit what changed and why, or roll back a bad step
+- Can't run autonomously — you have to be present for every decision
+
+`/superplan` fixes all of this by writing the plan to a versioned markdown file in your repo.
+
+| | Built-in Plan Mode | `/superplan` |
+|--|--|--|
+| **Persistence** | Session only — lost when tab closes | Saved to `plans/*.plan.md` in git |
+| **Structure** | Flat description of intended changes | Milestones → tasks with files, deps, acceptance criteria |
+| **Resumability** | Start over from scratch | Resume from first `[ ]` task |
+| **Progress tracking** | None | `[x]` checkboxes + completion timestamps |
+| **Git commits** | None | One per task: `Plan 2.1: <title>` |
+| **Autonomous execution** | No | `/loop /superplan next --yes` runs unattended |
+| **Best for** | Quick tasks, single-session changes | Multi-hour features, complex refactors, team visibility |
+
+---
+
 ## Skills Overview
 
 | Skill | Purpose | When to Use |
 |-------|---------|------------|
+| **`/superplan`** (or `/sp`) | Break large features into milestones and tasks, track progress in markdown, auto-execute with `/loop` | Starting a multi-day feature, complex refactors, want autonomous execution |
 | **`/ask`** | Read-only Q&A — answer questions about code, architecture, or anything else without modifying files | Understanding existing code before making changes, researching before a task |
-| **`/superplan`** | Break large features into milestones and tasks, track progress in markdown, auto-execute with `/loop` | Starting a multi-day feature, complex refactors, want autonomous execution |
 | **`plan-execution`** (auto) | Auto-activates during plan work — executes tasks, marks progress, creates commits | Works alongside `/superplan` and `/loop`; requires no explicit invocation |
 
 ---
 
 ## Quick Examples
-
-### `/ask` — Understand code before changing it
-
-```bash
-/ask How does the auth system work?
-# → Claude reads code, explains architecture without modifying anything
-
-/ask What files implement database queries?
-# → Research-only; no files touched
-
-/ask Read online about Karpathy's approach for knowledge management. How could we apply it in our repo?
-```
 
 ### `/superplan` — Build a feature methodically
 
@@ -57,6 +69,17 @@ ln -s ~/git/agent-skills/skills ~/.claude/skills
 # → Run all remaining tasks autonomously while you take a break
 ```
 
+### `/ask` — Understand code before changing it
+
+```bash
+/ask How does the auth system work?
+# → Claude reads code, explains architecture without modifying anything
+
+/ask What files implement database queries?
+# → Research-only; no files touched
+
+/ask Read online about Karpathy's approach for knowledge management. How could we apply it in our repo?
+```
 
 ### `plan-execution` — Automatic during `/superplan` work
 
@@ -83,13 +106,20 @@ No files are modified. Use `/ask` for research and learning; use `/superplan` wh
 
 ## `/superplan` in Detail
 
-`/superplan` breaks large features into **milestones** (product deliverables) and **tasks** (developer work items), tracks progress in a markdown file, and executes each task with acceptance criteria.
+`/superplan` (shorthand `/sp`) breaks large features into **milestones** (product deliverables) and **tasks** (developer work items), tracks progress in a markdown file, and executes each task with acceptance criteria.
+
+### Why This Works for Large Features
+
+1. **Resumability** — Stop mid-task, come back weeks later, pick up exactly where you left off.
+2. **Parallelism** — Dependencies are explicit. Tasks with no deps can run concurrently across people or agents.
+3. **Auditability** — Every architectural decision is documented with the reasoning. Future maintainers understand *why*, not just *what*.
+4. **Incremental progress** — A 50-task feature becomes 50 small, testable units. Each one verifiable before the next starts.
 
 ### Subcommands
 
 | Command | What it does |
 |---------|-------------|
-| `/superplan <description>` | Research the codebase and generate a structured plan file |
+| `/superplan <description>` or `/sp <description>` | Research the codebase and generate a structured plan file |
 | `/superplan <TICKET-ID>` | Same, but fetches ticket details from Linear/GitHub/Jira first |
 | `/superplan next` | Execute the next unchecked task (asks for confirmation) |
 | `/superplan next --yes` | Execute the next task without confirmation |
@@ -160,7 +190,7 @@ Claude re-reads the full plan on each iteration — completed tasks give context
 
 ## Plan File Format
 
-Plans live in `plans/*.plan.md` in your **project repo** (not this config repo). The `/superplan` commands creates and manages them.
+Plans live in `plans/*.plan.md` in your **project repo** (not this config repo). The `/superplan` command creates and manages them.
 
 ### Anatomy of a Plan File
 
@@ -239,13 +269,6 @@ Next task: 2.3 Implement POST /api/auth/refresh and logout
 Files: src/routers/auth.py
 Dependencies: 2.2
 ```
-
-### Why This Format Is Powerful
-
-1. **Resumability** — Stop mid-task, come back weeks later, pick up exactly where you left off.
-2. **Parallelism** — Dependencies are explicit. Tasks with no deps can run concurrently across people or agents.
-3. **Auditability** — Every architectural decision is documented with the reasoning. Future maintainers understand *why*, not just *what*.
-4. **Incremental progress** — A 50-task feature becomes 50 small, testable units. Each one verifiable before the next starts.
 
 ### Example Plans
 
