@@ -46,14 +46,25 @@ Use **parallel Explore agents** to understand what exists:
 
 Synthesize findings into a clear understanding of what needs to change.
 
+#### 2.5. Define Product Intent
+
+Before breaking work into milestones, articulate the product reasoning:
+
+- **For each potential milestone**, answer: Who benefits from this? What can they do after it ships that they couldn't before? Why this approach over alternatives?
+- **For milestones involving user-facing choices** (which examples to build, which defaults to set, which APIs to expose), document the selection criteria and reasoning — not just the final pick.
+- **For milestones that are primarily technical** (refactoring, infra, CI), connect them to the user outcome they enable: "Users can't install via pip until we have a publish workflow."
+
+This step prevents the plan from becoming a file-change checklist disconnected from user value. If you can't articulate who benefits from a milestone, it may not belong in the plan — or it should be folded into another milestone that has a clear user outcome.
+
 #### 3. Design the Plan
 
 Break the feature into **milestones** (product deliverables) and **tasks** (developer work items):
 
-**Milestones** should be:
-- Independently valuable (each delivers something usable)
-- Ordered from most foundational to most advanced
-- Testable end-to-end after completion
+**Milestones** are product deliverables, not task groups. Each should read as if a PM wrote it:
+- **Independently valuable** — each delivers something a user can see, use, or benefit from
+- **Ordered from most foundational to most advanced** — early milestones unblock later ones
+- **Testable end-to-end** — not just "code compiles" but "a user can do X"
+- **Product-justified** — the description explains *who benefits* and *why this matters*, not just *what gets built*. If a milestone is purely technical (infra, CI, refactoring), connect it to the user outcome it enables.
 
 **Tasks** should be:
 - Small enough to complete in one conversation (~30 min of Claude work)
@@ -111,7 +122,11 @@ Break the feature into **milestones** (product deliverables) and **tasks** (deve
 
 ## Milestone 1: <Product Deliverable Name>
 
-<1 sentence describing what's usable after this milestone>
+**Why this matters:** <Who benefits and what they can do after this ships. Write as if a PM is justifying this to stakeholders — not "add 3 templates" but "developers evaluating Canopy can see immediately how to build agents for their own use cases, reducing time-to-first-agent from hours to minutes.">
+
+**Success criteria:** <Observable user outcome, not just "tests pass." Example: "A developer who has never seen Canopy can `canopy create` from an example template, connect to it, and have a useful conversation within 5 minutes.">
+
+**Key decisions:** <If this milestone involves choices (which templates, which API design, which defaults), state what was chosen and why. This prevents the implementing agent from second-guessing or making different choices.>
 
 ### 1.1 [ ] <Task Title>
 - **Files:** `path/to/file1`, `path/to/file2`
@@ -129,7 +144,11 @@ Break the feature into **milestones** (product deliverables) and **tasks** (deve
 
 ## Milestone 2: <Product Deliverable Name>
 
-<1 sentence describing what's usable after this milestone>
+**Why this matters:** <Who benefits and what changes for them>
+
+**Success criteria:** <Observable user outcome>
+
+**Key decisions:** <Choices made and why>
 
 ### 2.1 [ ] <Task Title>
 - **Files:** `path/to/file`
@@ -322,6 +341,8 @@ If the project has specific commands for code checks, PR creation, or ticket man
 - Not updating the plan file after completing tasks
 - Ignoring dependency ordering
 - Creating a plan for a trivial task (just do it directly)
+- Writing milestone descriptions that only say what to build, not who benefits or why
+- Making user-facing choices (which examples, which defaults, which names) without documenting the reasoning in the milestone
 
 ## Good Practices
 
@@ -331,3 +352,5 @@ If the project has specific commands for code checks, PR creation, or ticket man
 - Commit after each task (not after each milestone)
 - Review the plan periodically with `/plan review`
 - Edit the plan file directly when scope changes
+- Write milestone descriptions as if a PM is justifying them — who benefits, what changes for the user
+- Document the "why" behind choices so the implementing agent doesn't second-guess them
