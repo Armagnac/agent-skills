@@ -3,7 +3,7 @@ name: superplan
 description: "Produce higher-quality code by breaking a feature into small, focused tasks the coding agent can nail one at a time. Works like an engineering team: feature → milestones (product deliverables) → ~30-min tasks with specific files, acceptance criteria, and dependencies. Each task runs in a fresh context — narrow scope, full attention, one git commit per task. Use when starting any non-trivial feature, complex refactor, or whenever you want the agent focused on one small thing at a time instead of juggling an entire feature in one session. Supports /loop for autonomous execution."
 when_to_use: "create a plan, plan this feature, break this down, I want higher quality code, plan before implementing, ship this feature, superplan, /sp"
 allowed-tools: Bash(git:* ls:* cat:*) Read Glob Grep Edit Write Agent Task
-argument-hint: <description or ticket_id> | status | next <plan_file> | review <plan_file>
+argument-hint: <description or ticket_id> | status | next [M<N>] [<plan_file>] [--yes] | review <plan_file>
 ---
 
 # SuperPlan Command
@@ -17,6 +17,7 @@ When user runs `/superplan` or `/sp`, route to the appropriate subcommand based 
 | `status` | Show progress across all active plans |
 | `next` or `next <plan_file>` | Execute next unchecked task |
 | `next --yes` or `next <plan_file> --yes` | Execute next unchecked task without confirmation prompt |
+| `next M<N>` or `next M<N> <plan_file>` | Execute all tasks in milestone N without stopping |
 | `review` or `review <plan_file>` | Re-evaluate plan against current code state |
 | Anything else | Create a new plan (treat argument as feature description or ticket ID) |
 
@@ -200,7 +201,25 @@ If no plan files found, show: "No plans found. Create one with `/superplan <feat
 
 ## Subcommand: Next
 
-**Trigger:** `/superplan next` or `/superplan next plans/<name>.plan.md` (or `/sp` as shorthand) or either with `--yes` flag
+**Trigger:** `/superplan next` or `/superplan next plans/<name>.plan.md` (or `/sp` as shorthand) or either with `--yes` flag, or `next M<N>` for milestone mode
+
+### Milestone Mode (`next M<N>`)
+
+When a milestone number is provided (e.g., `next M3` or `next M3 plans/foo.plan.md`):
+
+1. Find the plan (same logic as below)
+2. Locate all tasks whose IDs start with `3.` (i.e., belong to Milestone 3)
+3. Execute each task in order, **without any confirmation prompt** (milestone mode is always auto-yes)
+4. After each task: mark complete, commit, show progress
+5. **Stop after the last task in that milestone** — do not continue into the next milestone
+6. Show a milestone completion summary:
+   ```
+   Milestone 3 complete: 4/4 tasks done
+   Next milestone: Milestone 4 — <name>
+   Run `/sp next M4` to continue.
+   ```
+7. If some tasks in the milestone are already `[x]`, skip them and only run remaining `[ ]` tasks
+8. If all tasks in the milestone are already complete, report that and exit
 
 ### Steps
 
